@@ -1,0 +1,60 @@
+from tkinter import *
+
+class orderform:
+    def __init__(self):
+
+        root = Tk()
+        root.configure(background = 'white')
+        photo = PhotoImage(file="P:\GWlogo.gif") # specify the path to your file
+        label = Label(root, bg = 'white', image=photo)  #put the image in a label to disdaply it in the window
+        label.grid(row = 0, column = 2) 
+        self.root = root
+        root.title('Order Processing Form')
+        Label(root, bg = 'white', text="Customer ID", font = 'Arial 10 bold').grid(row=3)
+        Label(root, bg = 'white', text = 'Product Name', font = 'Arial 10 bold').grid(row = 4)
+        Label(root, bg = 'white', text = 'Price', font = 'Arial 10 bold').grid(row = 5)
+        Label(root, bg = 'white', text = 'Quantity', font = 'Arial 10 bold').grid(row = 6)
+        Label(root, bg = 'white', text = 'Sales Tax', font = 'Arial 10 bold').grid(row = 7)
+        Label(root, bg = 'white', text = '').grid(row = 8, column = 2)
+        self.customerid = StringVar()
+        self.productname = StringVar()
+        self.productprice = StringVar()
+        self.productquantity = StringVar()
+        self.totalpayment = StringVar()
+        self.purchasesummary = StringVar()
+        self.customer = {"customer_id":None, "products":{}, "current_total":0}
+        Entry(root, width = 50, textvariable = self.customerid).grid(row=3, column = 2)
+        Entry(root, width = 50,textvariable = self.productname).grid(row=4, column = 2)
+        Entry(root, width = 50,textvariable = self.productprice).grid(row=5, column = 2)
+        Entry(root, width = 50,textvariable = self.productquantity).grid(row=6, column = 2)
+        Label(root, bg = 'light grey', text = '13%', font = 'Arial 10 bold').grid(row=7, column = 2)     
+        self.label = Label(root, bg = 'white', textvariable = self.purchasesummary, font = 'Arial 10 bold').grid(row = 12, column = 2)
+        Button(root, bg = 'green', text = 'Add To Cart', font = 'Arial 10 bold', command = self.calc_total).grid(row = 9, column = 2)
+        Button(root, bg = 'red', text = 'Need Help?', font = 'Arial 12 bold').grid(row = 13, column = 3)
+        Button(root, bg = 'green', text = 'Complete Order', font = 'Arial 10 bold', command = self.completeOrder).grid(row = 10, column = 2)
+        root.mainloop()
+    
+        
+    def calc_total(self):
+        if self.customer["customer_id"] == None:
+            self.customer["customer_id"] = self.customerid.get()
+            
+        dictionary = self.customer["products"]
+        if self.productname.get() not in self.customer["products"]:
+           dictionary =  self.customer["products"]
+           dictionary[self.productname.get()] = [0,0]
+        dictionary[self.productname.get()][0] = dictionary[self.productname.get()][0] + int(self.productquantity.get())
+        
+        total = round(1.13*int(self.productquantity.get()) * float(self.productprice.get()),2)
+        dictionary[self.productname.get()][1] = dictionary[self.productname.get()][1] + total
+        self.customer["current_total"] = self.customer["current_total"] + total
+        self.totalpayment.set( self.customer["current_total"] )
+    
+    def completeOrder(self):
+        outputstring = "Order For Customer: " + self.customer["customer_id"] + "\n"
+        for product in self.customer["products"]:
+            outputstring = outputstring + str(self.customer["products"][product][0])  + " " +  product + " Total: $" + str(self.customer["products"][product][1]) + "\n"
+        outputstring = outputstring + "Order Total: $" + str(self.customer["current_total"])
+        self.purchasesummary.set(outputstring) 
+        
+orderform()
